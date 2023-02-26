@@ -1,19 +1,18 @@
 package main
 
 import (
+	handlers "datamerge/internal/handler"
+	service "datamerge/internal/service"
 	"log"
 	"net/http"
 )
 
 func main() {
-	http.HandleFunc("/hotels", func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method {
-		case http.MethodGet:
-			w.WriteHeader(200)
-		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		}
-	})
+
+	svc := service.NewHotelService()
+	handler := handlers.NewHotelHandler(svc)
+
+	http.HandleFunc("/hotels", handler.GetAllHotels)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
