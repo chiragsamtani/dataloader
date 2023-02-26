@@ -7,5 +7,5 @@ package model
 // Single DestinationId
 type HotelRequestDTO struct {
 	HotelId       []string `json:"hotel_ids"`
-	DestinationId string   `json:"destination_id"`
+	DestinationId int      `json:"destination_id"`
 }
