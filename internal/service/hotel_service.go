@@ -1,7 +1,9 @@
 package service
 
+import "datamerge/internal/model"
+
 type IHotelService interface {
-	GetHotels() (interface{}, error)
+	SearchHotels(dto model.HotelRequestDTO) (interface{}, error)
 }
 
 type HotelService struct {
@@ -13,7 +15,7 @@ func NewHotelService() *HotelService {
 	return &HotelService{}
 }
 
-func (s *HotelService) GetHotels() (interface{}, error) {
+func (s *HotelService) SearchHotels(dto model.HotelRequestDTO) (interface{}, error) {
 	// Business logic to get all hotels
 	return "test", nil
 }
