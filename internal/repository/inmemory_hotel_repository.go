@@ -5,23 +5,18 @@ import (
 	"sync"
 )
 
-// InMemoryHotelRepository uses two hashmaps to store keys that
-// are indexed by hotelId and destinationId, we use two hashmaps
-// as one destinationIds can map to many hotels. We can use a single
-// hashmap, but accepting the tradeoff that more memory will be used
-// in return for faster lookups
+// InMemoryHotelRepository uses one hashmaps to store keys that
+// are indexed by hotelId only. Filtering by destinationIds will
+// be doing a full table scan currently
 type InMemoryHotelRepository struct {
-	hotelIdKvStore       map[string]*model.Hotel
-	destinationIdKvStore map[int][]*model.Hotel
-	mu                   sync.Mutex
+	kvStore map[string]*model.Hotel
+	mu      sync.Mutex
 }
 
 func NewInMemoryHotelRepository() *InMemoryHotelRepository {
 	m := make(map[string]*model.Hotel, 0)
-	md := make(map[int][]*model.Hotel, 0)
 	return &InMemoryHotelRepository{
-		hotelIdKvStore:       m,
-		destinationIdKvStore: md,
+		kvStore: m,
 	}
 }
 
@@ -32,7 +27,7 @@ func (i *InMemoryHotelRepository) GetHotelsByHotelId(hotelIds []string) []*model
 	defer i.mu.Unlock()
 	var result []*model.Hotel
 	for _, val := range hotelIds {
-		hotel, present := i.hotelIdKvStore[val]
+		hotel, present := i.kvStore[val]
 		if present {
 			result = append(result, hotel)
 		}
@@ -45,11 +40,13 @@ func (i *InMemoryHotelRepository) GetHotelsByHotelId(hotelIds []string) []*model
 func (i *InMemoryHotelRepository) GetHotelsByDestinationId(destinationId int) []*model.Hotel {
 	i.mu.Lock()
 	defer i.mu.Unlock()
-	hotel, present := i.destinationIdKvStore[destinationId]
-	if present {
-		return hotel
+	var hotels []*model.Hotel
+	for _, val := range i.kvStore {
+		if val.DestinationID == destinationId {
+			hotels = append(hotels, val)
+		}
 	}
-	return nil
+	return hotels
 }
 
 // InsertHotel inserts a hotel with the keys being both the hotelId and destinationId
@@ -57,8 +54,6 @@ func (i *InMemoryHotelRepository) GetHotelsByDestinationId(destinationId int) []
 func (i *InMemoryHotelRepository) InsertHotel(hotel *model.Hotel) {
 	i.mu.Lock()
 	hotelIdKey := hotel.ID
-	destinationIdKey := hotel.DestinationID
-	i.hotelIdKvStore[hotelIdKey] = hotel
-	i.destinationIdKvStore[destinationIdKey] = append(i.destinationIdKvStore[destinationIdKey], hotel)
+	i.kvStore[hotelIdKey] = hotel
 	defer i.mu.Unlock()
 }

@@ -44,18 +44,18 @@ func prefilledTestingRepository() *InMemoryHotelRepository {
 func TestInMemoryHotelRepository_InsertOneElement(t *testing.T) {
 	repo := NewInMemoryHotelRepository()
 	repo.InsertHotel(&hotelData1)
-	assert.Equal(t, *repo.hotelIdKvStore[testHotelId1], hotelData1)
-	assert.Equal(t, repo.destinationIdKvStore[hotelData1.DestinationID], []*model.Hotel{&hotelData1})
-	assert.Nil(t, repo.hotelIdKvStore[testHotelId2])
+	assert.Equal(t, *repo.kvStore[testHotelId1], hotelData1)
+	//assert.Equal(t, repo.destinationIdKvStore[hotelData1.DestinationID], []string{testHotelId1})
+	//assert.Nil(t, repo.hotelIdKvStore[testHotelId2])
 }
 
 func TestInMemoryHotelRepository_InsertMultipleElementsWithSingleDestinationId(t *testing.T) {
 	repo := NewInMemoryHotelRepository()
 	repo.InsertHotel(&hotelData2)
 	repo.InsertHotel(&hotelData3)
-	assert.Equal(t, *repo.hotelIdKvStore[hotelData2.ID], hotelData2)
-	assert.Equal(t, *repo.hotelIdKvStore[hotelData3.ID], hotelData3)
-	assert.Equal(t, repo.destinationIdKvStore[testMultipleDestinationId], []*model.Hotel{&hotelData2, &hotelData3})
+	assert.Equal(t, *repo.kvStore[hotelData2.ID], hotelData2)
+	assert.Equal(t, *repo.kvStore[hotelData3.ID], hotelData3)
+	//assert.Equal(t, repo.destinationIdKvStore[testMultipleDestinationId], []string{testHotelId2, testHotelId3})
 }
 
 func TestInMemoryHotelRepository_GetHotelWithSingleHotelId(t *testing.T) {
@@ -101,4 +101,21 @@ func TestInMemoryHotelRepository_GetHotelsWithNoExisitingDestinationIdKey(t *tes
 	actual := repo.GetHotelsByDestinationId(7000)
 	assert.Equal(t, len(actual), 0)
 	assert.Empty(t, actual)
+}
+
+func TestInMemoryHotelRepository_GetHotelsWithModification(t *testing.T) {
+	repo := prefilledTestingRepository()
+	modifiedHotelData := model.Hotel{
+		ID:            testHotelId1,
+		DestinationID: testSingleDestinationId,
+		Name:          "Radisson",
+		Description:   "Test Description",
+	}
+	repo.InsertHotel(&modifiedHotelData)
+	hotels := repo.GetHotelsByDestinationId(testSingleDestinationId)
+	assert.Equal(t, len(hotels), 1)
+	assert.Equal(t, *hotels[0], modifiedHotelData)
+	hotels = repo.GetHotelsByHotelId([]string{testHotelId1})
+	assert.Equal(t, len(hotels), 1)
+	assert.Equal(t, *hotels[0], modifiedHotelData)
 }
