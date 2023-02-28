@@ -4,19 +4,24 @@ import (
 	"datamerge/internal/model"
 	"datamerge/internal/repository"
 	"encoding/json"
-	"fmt"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
+)
+
+const (
+	ConfigSubstringLimitSeparator = 2
 )
 
 type DirectDataLoaderService struct {
 	configs                string
 	repo                   repository.HotelRepository
 	hotelLoaderDataFactory model.HotelLoaderDataFactory
+	logger                 *logrus.Logger
 }
 
-func NewDirectDataLoaderService(configs string, repo repository.HotelRepository) *DirectDataLoaderService {
-	return &DirectDataLoaderService{configs: configs, repo: repo}
+func NewDirectDataLoaderService(configs string, repo repository.HotelRepository, logger *logrus.Logger) *DirectDataLoaderService {
+	return &DirectDataLoaderService{configs: configs, repo: repo, logger: logger}
 }
 
 func readJsonFileFromUrl(url string) ([]interface{}, error) {
@@ -35,19 +40,29 @@ func readJsonFileFromUrl(url string) ([]interface{}, error) {
 func (d *DirectDataLoaderService) LoadData() {
 	configs := strings.Split(d.configs, ",")
 	for _, config := range configs {
-		configSplit := strings.SplitN(config, ":", 2)
+		configSplit := strings.SplitN(config, ":", ConfigSubstringLimitSeparator)
+		if len(configSplit) != 2 {
+			panic("supplier config is broken, please check env variable SUPPLIER_CONFIG")
+		}
 		supplierIdentifier := configSplit[0]
 		url := configSplit[1]
 		results, err := readJsonFileFromUrl(url)
 		if err != nil {
-			return
+			d.logger.WithFields(logrus.Fields{
+				"supplier": supplierIdentifier,
+				"url":      url,
+			}).Warn(err)
+			continue
 		}
 		supplierModel := d.hotelLoaderDataFactory.CreateSupplier(supplierIdentifier)
 		var hotels []model.HotelLoaderData
 		for _, result := range results {
 			hotel, err := supplierModel.ConvertToHotelLoaderData(result)
 			if err != nil {
-				fmt.Println(err)
+				d.logger.WithFields(logrus.Fields{
+					"supplier": supplierIdentifier,
+					"url":      url,
+				}).Warn(err)
 				continue
 			}
 			hotels = append(hotels, hotel)

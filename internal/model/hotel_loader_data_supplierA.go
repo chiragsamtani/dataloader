@@ -1,8 +1,12 @@
 package model
 
 import (
+	"datamerge/internal/utils"
 	"encoding/json"
+	"strings"
 )
+
+const UppercaseSpaceLimitMinLength = 4
 
 // HotelDataLoaderSupplierA represents an adapter of the HotelLoaderData that
 // represents struct binding to one of the Supplier datasets.
@@ -77,7 +81,16 @@ func (h *HotelDataLoaderSupplierA) GetImages() HotelImages {
 }
 
 func (h *HotelDataLoaderSupplierA) GetAmenities() HotelAmenities {
-	return HotelAmenities{General: h.Facilities}
+	var sanitizedAmenities []string
+	for _, amenities := range h.Facilities {
+		amenities = strings.TrimSpace(amenities)
+		if len(amenities) > UppercaseSpaceLimitMinLength {
+			sanitizedAmenities = append(sanitizedAmenities, utils.AddSpaceBetweenUpperCaseCharacters(amenities))
+		} else {
+			sanitizedAmenities = append(sanitizedAmenities, amenities)
+		}
+	}
+	return HotelAmenities{General: sanitizedAmenities}
 }
 
 func (h *HotelDataLoaderSupplierA) GetBookingConditions() []string {

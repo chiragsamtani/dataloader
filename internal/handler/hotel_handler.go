@@ -58,6 +58,10 @@ func (h *HotelHandler) SearchHotels(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func (h *HotelHandler) SetupHandlers() {
+	http.HandleFunc("/hotels", h.SearchHotels)
+}
+
 func sendErrorResponse(w http.ResponseWriter, msg string, code int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
