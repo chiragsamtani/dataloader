@@ -2,6 +2,7 @@ package main
 
 import (
 	handlers "datamerge/internal/handler"
+	"datamerge/internal/repository"
 	service "datamerge/internal/service"
 	"log"
 	"net/http"
@@ -9,7 +10,10 @@ import (
 
 func main() {
 
-	svc := service.NewHotelService()
+	//logger := utils.NewLogger("warn")
+
+	repo := repository.NewInMemoryHotelRepository()
+	svc := service.NewHotelService(repo)
 	handler := handlers.NewHotelHandler(svc)
 
 	http.HandleFunc("/hotels", handler.SearchHotels)

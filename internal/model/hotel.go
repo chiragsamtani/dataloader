@@ -24,17 +24,13 @@ type HotelAmenities struct {
 	Room    []string `json:"room"`
 }
 
+type Image struct {
+	Link        string `json:"link"`
+	Description string `json:"description"`
+}
+
 type HotelImages struct {
-	Rooms []struct {
-		Link        string `json:"link"`
-		Description string `json:"description"`
-	} `json:"rooms"`
-	Site []struct {
-		Link        string `json:"link"`
-		Description string `json:"description"`
-	} `json:"site"`
-	Amenities []struct {
-		Link        string `json:"link"`
-		Description string `json:"description"`
-	} `json:"amenities"`
+	Rooms     []Image `json:"rooms"`
+	Site      []Image `json:"site"`
+	Amenities []Image `json:"amenities"`
 }
