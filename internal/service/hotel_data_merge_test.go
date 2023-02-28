@@ -366,6 +366,28 @@ func TestMergeData_NoImagesWithMultipleMerges(t *testing.T) {
 	assert.Equal(t, actual.Images, expectedResult)
 }
 
+func TestMergeData_NoImagesWithMultipleMergesAndDuplicateUrls(t *testing.T) {
+	existing := model.Hotel{
+		ID:            "ibx8",
+		DestinationID: 5432,
+	}
+	expectedResult := model.HotelImages{
+		Rooms:     []model.Image{{Link: "link1", Description: "caption1"}, {Link: "url1", Description: "desc1"}},
+		Site:      []model.Image{{Link: "link2", Description: "caption2"}},
+		Amenities: []model.Image{{Link: "url2", Description: "desc2"}},
+	}
+
+	imageAddedToSupplier := supplierC
+	imageAddedToSupplier.Images.Rooms = append(imageAddedToSupplier.Images.Rooms,
+		model.ImageSupplierC{URL: "link1", Description: "different desc"})
+
+	actual := MergeData(existing, &supplierB)
+	actual = MergeData(*actual, &supplierC)
+	assert.Equal(t, actual.ID, supplierB.HotelID)
+	assert.Equal(t, actual.DestinationID, supplierB.DestinationID)
+	assert.Equal(t, actual.Images, expectedResult)
+}
+
 func TestMergeData_WithEmptyStringAsLatitude(t *testing.T) {
 	existing := model.Hotel{
 		ID:            "ibx8",

@@ -80,18 +80,58 @@ func mergeAmenities(exist, new model.HotelAmenities) model.HotelAmenities {
 // mergeImages will merge image data between existing data and new data
 // the data will be a union of existing and new data images, the URLs are
 // first checked to make sure we don't have any duplicate data
+// the returned object will be a unique Set of images
 func mergeImages(exist, new model.HotelImages) model.HotelImages {
 	existingRoomImages := exist.Rooms
 	existingAmenitiesImages := exist.Amenities
 	existingSiteImages := exist.Site
+
+	roomUrls := utils.NewSet()
+	// Get all unique urls from existing data set (if any)
+	// and add it to the result object if and only if the url is not a duplicate
+	// from the new data set
+	for _, roomImage := range existingRoomImages {
+		roomUrls.Add(roomImage.Link)
+	}
+
 	for _, roomImages := range new.Rooms {
-		existingRoomImages = append(existingRoomImages, roomImages)
+		if !roomUrls.Contains(roomImages.Link) {
+			roomUrls.Add(roomImages.Link)
+			existingRoomImages = append(existingRoomImages, model.Image{
+				Link:        roomImages.Link,
+				Description: roomImages.Description,
+			})
+		}
 	}
+
+	amenitiesUrls := utils.NewSet()
+	for _, amenitiesImage := range existingAmenitiesImages {
+		amenitiesUrls.Add(amenitiesImage.Link)
+	}
+
 	for _, amenitiesImages := range new.Amenities {
-		existingAmenitiesImages = append(existingAmenitiesImages, amenitiesImages)
+		if !amenitiesUrls.Contains(amenitiesImages.Link) {
+			amenitiesUrls.Add(amenitiesImages.Link)
+			existingAmenitiesImages = append(existingAmenitiesImages, model.Image{
+				Link:        amenitiesImages.Link,
+				Description: amenitiesImages.Description,
+			})
+		}
 	}
+
+	siteUrls := utils.NewSet()
+	for _, siteImage := range existingSiteImages {
+		siteUrls.Add(siteImage.Link)
+	}
+
 	for _, siteImages := range new.Site {
-		existingSiteImages = append(existingSiteImages, siteImages)
+		if !siteUrls.Contains(siteImages.Link) {
+			siteUrls.Add(siteImages.Link)
+			existingSiteImages = append(existingSiteImages, model.Image{
+				Link:        siteImages.Link,
+				Description: siteImages.Description,
+			})
+		}
 	}
 	return model.HotelImages{
 		Rooms:     existingRoomImages,
