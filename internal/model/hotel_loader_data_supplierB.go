@@ -9,29 +9,34 @@ import "encoding/json"
 // values will be ignored
 // DestinationId is a required field and will NOT be ignored
 type HotelDataLoaderSupplierB struct {
-	HotelID       string `json:"hotel_id"`
-	DestinationID int    `json:"destination_id"`
-	HotelName     string `json:"hotel_name"`
-	Location      struct {
-		Address string `json:"address"`
-		Country string `json:"country"`
-	} `json:"location"`
-	Details   string `json:"details"`
-	Amenities struct {
-		General []string `json:"general"`
-		Room    []string `json:"room"`
-	} `json:"amenities"`
-	Images struct {
-		Rooms []struct {
-			Link    string `json:"link"`
-			Caption string `json:"caption"`
-		} `json:"rooms"`
-		Site []struct {
-			Link    string `json:"link"`
-			Caption string `json:"caption"`
-		} `json:"site"`
-	} `json:"images"`
-	BookingConditions []string `json:"booking_conditions"`
+	HotelID           string             `json:"hotel_id"`
+	DestinationID     int                `json:"destination_id"`
+	HotelName         string             `json:"hotel_name"`
+	Location          LocationSupplierB  `json:"location"`
+	Details           string             `json:"details"`
+	Amenities         AmenitiesSupplierB `json:"amenities"`
+	Images            ImagesSupplierB    `json:"images"`
+	BookingConditions []string           `json:"booking_conditions"`
+}
+
+type AmenitiesSupplierB struct {
+	General []string `json:"general"`
+	Room    []string `json:"room"`
+}
+
+type LocationSupplierB struct {
+	Address string `json:"address"`
+	Country string `json:"country"`
+}
+
+type ImagesSupplierB struct {
+	Rooms []ImageSupplierB `json:"rooms"`
+	Site  []ImageSupplierB `json:"site"`
+}
+
+type ImageSupplierB struct {
+	Link    string `json:"link"`
+	Caption string `json:"caption"`
 }
 
 func (h *HotelDataLoaderSupplierB) ConvertToHotelLoaderData(t interface{}) (HotelLoaderData, error) {

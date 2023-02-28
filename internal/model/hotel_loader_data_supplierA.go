@@ -50,21 +50,22 @@ func (h *HotelDataLoaderSupplierA) GetName() string {
 }
 
 func (h *HotelDataLoaderSupplierA) GetLocation() HotelLocation {
-	lat, ok := h.Latitude.(float64)
-	if !ok {
-		return HotelLocation{}
-	}
-	long, ok := h.Latitude.(float64)
-	if !ok {
-		return HotelLocation{}
-	}
-	return HotelLocation{
-		Lat:     lat,
-		Lng:     long,
+	hotelLocation := HotelLocation{
 		Address: h.Address,
 		City:    h.City,
 		Country: h.Country,
 	}
+	lat, ok := h.Latitude.(float64)
+	if !ok {
+		return hotelLocation
+	}
+	long, ok := h.Longitude.(float64)
+	if !ok {
+		return hotelLocation
+	}
+	hotelLocation.Lat = lat
+	hotelLocation.Lng = long
+	return hotelLocation
 }
 
 func (h *HotelDataLoaderSupplierA) GetDescription() string {

@@ -3,24 +3,25 @@ package model
 import "encoding/json"
 
 type HotelDataLoaderSupplierC struct {
-	ID          string   `json:"id"`
-	Destination int      `json:"destination"`
-	Name        string   `json:"name"`
-	Lat         float64  `json:"lat"`
-	Lng         float64  `json:"lng"`
-	Address     string   `json:"address"`
-	Info        string   `json:"info"`
-	Amenities   []string `json:"amenities"`
-	Images      struct {
-		Rooms []struct {
-			URL         string `json:"url"`
-			Description string `json:"description"`
-		} `json:"rooms"`
-		Amenities []struct {
-			URL         string `json:"url"`
-			Description string `json:"description"`
-		} `json:"amenities"`
-	} `json:"images"`
+	ID          string          `json:"id"`
+	Destination int             `json:"destination"`
+	Name        string          `json:"name"`
+	Lat         interface{}     `json:"lat"`
+	Lng         interface{}     `json:"lng"`
+	Address     string          `json:"address"`
+	Info        string          `json:"info"`
+	Amenities   []string        `json:"amenities"`
+	Images      ImagesSupplierC `json:"images"`
+}
+
+type ImagesSupplierC struct {
+	Rooms     []ImageSupplierC `json:"rooms"`
+	Amenities []ImageSupplierC `json:"amenities"`
+}
+
+type ImageSupplierC struct {
+	URL         string `json:"url"`
+	Description string `json:"description"`
 }
 
 func (h *HotelDataLoaderSupplierC) ConvertToHotelLoaderData(t interface{}) (HotelLoaderData, error) {
@@ -49,11 +50,20 @@ func (h *HotelDataLoaderSupplierC) GetName() string {
 }
 
 func (h *HotelDataLoaderSupplierC) GetLocation() HotelLocation {
-	return HotelLocation{
-		Lat:     h.Lat,
-		Lng:     h.Lng,
+	hotelLocation := HotelLocation{
 		Address: h.Address,
 	}
+	lat, ok := h.Lat.(float64)
+	if !ok {
+		return hotelLocation
+	}
+	long, ok := h.Lng.(float64)
+	if !ok {
+		return hotelLocation
+	}
+	hotelLocation.Lat = lat
+	hotelLocation.Lng = long
+	return hotelLocation
 }
 
 func (h *HotelDataLoaderSupplierC) GetDescription() string {

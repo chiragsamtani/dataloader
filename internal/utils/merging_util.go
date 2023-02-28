@@ -1,46 +1,37 @@
 package utils
 
-import (
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
-	"strings"
-)
+import "golang.org/x/text/cases"
 
 const (
 	CountryCodeLength = 2
 )
 
-func MergeStringFieldByLength(exist, new string) string {
+func MergeStringFieldByLength(exist, new string, caseOption *cases.Caser) string {
 	if len(exist) > len(new) {
-		return strings.ToTitle(exist)
+		return caseOption.String(exist)
 	}
-	return strings.ToTitle(new)
+	return caseOption.String(new)
 }
 
 func MergeCountry(exist, new string) string {
-	country := ""
-	if exist == "" {
-	} else {
-		if new != "" && len(new) == CountryCodeLength {
-			country = new
-		} else {
-			country = exist
-		}
+	if new != "" && len(new) == CountryCodeLength {
+		return new
+	} else if exist == "" {
+		return new
 	}
-	return country
+	return exist
 }
 
 func MergingCoordinateFields(exist, new float64) float64 {
 	if exist == 0.0 {
 		return new
-	} else {
-		return exist
 	}
+	return exist
 }
 
-func MergeStringArrayField(exist, new []string) []string {
+func MergeStringArrayField(exist, new []string, caseOption *cases.Caser) []string {
 	for _, val := range new {
-		exist = append(exist, cases.Title(language.English).String(val))
+		exist = append(exist, caseOption.String(val))
 	}
 	return exist
 }
