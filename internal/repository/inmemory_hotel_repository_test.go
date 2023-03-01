@@ -60,14 +60,14 @@ func TestInMemoryHotelRepository_InsertMultipleElementsWithSingleDestinationId(t
 
 func TestInMemoryHotelRepository_GetHotelWithSingleHotelId(t *testing.T) {
 	repo := prefilledTestingRepository()
-	actual := repo.GetHotelsByHotelId([]string{testHotelId1})
+	actual := repo.GetHotelsByHotelIds([]string{testHotelId1})
 	assert.Equal(t, len(actual), 1)
 	assert.Equal(t, *actual[0], hotelData1)
 }
 
 func TestInMemoryHotelRepository_GetHotelWithMultipleHotelId(t *testing.T) {
 	repo := prefilledTestingRepository()
-	actual := repo.GetHotelsByHotelId([]string{testHotelId1, testHotelId2})
+	actual := repo.GetHotelsByHotelIds([]string{testHotelId1, testHotelId2})
 	assert.Equal(t, len(actual), 2)
 	// the result needs to be ordered according to the keys supplied in the parameter
 	assert.Equal(t, *actual[0], hotelData1)
@@ -76,7 +76,7 @@ func TestInMemoryHotelRepository_GetHotelWithMultipleHotelId(t *testing.T) {
 
 func TestInMemoryHotelRepository_GetHotelsWithNoExisitingHotelIdKey(t *testing.T) {
 	repo := prefilledTestingRepository()
-	actual := repo.GetHotelsByHotelId([]string{"0000"})
+	actual := repo.GetHotelsByHotelIds([]string{"0000"})
 	assert.Equal(t, len(actual), 0)
 	assert.Empty(t, actual)
 }
@@ -115,7 +115,7 @@ func TestInMemoryHotelRepository_GetHotelsWithModification(t *testing.T) {
 	hotels := repo.GetHotelsByDestinationId(testSingleDestinationId)
 	assert.Equal(t, len(hotels), 1)
 	assert.Equal(t, *hotels[0], modifiedHotelData)
-	hotels = repo.GetHotelsByHotelId([]string{testHotelId1})
+	hotels = repo.GetHotelsByHotelIds([]string{testHotelId1})
 	assert.Equal(t, len(hotels), 1)
 	assert.Equal(t, *hotels[0], modifiedHotelData)
 }

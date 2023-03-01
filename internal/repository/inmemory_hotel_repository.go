@@ -22,7 +22,7 @@ func NewInMemoryHotelRepository() *InMemoryHotelRepository {
 
 // GetHotelsByHotelId returns all the hotels given a list of hotelIds
 // this function is thread-safe
-func (i *InMemoryHotelRepository) GetHotelsByHotelId(hotelIds []string) []*model.Hotel {
+func (i *InMemoryHotelRepository) GetHotelsByHotelIds(hotelIds []string) []*model.Hotel {
 	i.mu.Lock()
 	defer i.mu.Unlock()
 	var result []*model.Hotel
@@ -55,5 +55,5 @@ func (i *InMemoryHotelRepository) InsertHotel(hotel *model.Hotel) {
 	i.mu.Lock()
 	hotelIdKey := hotel.ID
 	i.kvStore[hotelIdKey] = hotel
-	defer i.mu.Unlock()
+	i.mu.Unlock()
 }
