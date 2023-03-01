@@ -57,12 +57,13 @@ section below.
 | Field Name  	    | Data Type   	    | Merge Strategy |
 |---	            |---	            |--- |
 |`id`   	        | String  	        | This is treated as the primary key of the data |
-| `destinationId`   | Numeric           | This can map to many hotels, that is one destinationId can span multiple hotels |
-| `name`  	        | String 	        | Longest hotel name is chosen |
+| `destinationId` | Numeric           | This can map to many hotels, that is one destinationId can span multiple hotels |
+| `name`  	      | String 	        | Longest hotel name is chosen |
 | `location` 	    | Object  	        | Country: will choose ISO-3601 compliant country codes and choose non-empty strings in that order <br />City: will choose longer length city between existing and new data <br /> Address: will choose longer address between existing and new data <br/>Lat: will choose first non-zero data <br/>Lng: will choose first non-zero data|
 | `description`  	| String  	        | Longest hotel description is chosen
-| `amenities`  	    | Array  	        | Union of existing and new data, filtering out any duplicate or similar data |
+| `amenities`  	  | Array  	        | Union of existing and new data, filtering out any duplicate or similar data |
 | `images`  	    | Array   	        | Union of existing and new data images, the URLs are first added to a Set to make sure we don't have any duplicate data, the returned object will be a unique Set of images with image link and captions |
+| `booking_conditions` | Array   	        | Union between the existing and new data with no filter applied |
 
 ### Tests
 
