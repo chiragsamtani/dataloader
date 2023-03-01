@@ -9,3 +9,4 @@ services:
     env_file:
       - ./app.local.env
     restart: on-failure
+    container_name: api
