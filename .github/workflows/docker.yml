@@ -7,12 +7,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v3
       - name: Docker Build
-        run: docker-compose build
-      - name: Docker Run
-        run: docker-compose up
+        run: docker-compose up --build
       - name: Docker Sanity Test
         run: healthcheck.sh api 8080
