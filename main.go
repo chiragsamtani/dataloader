@@ -15,9 +15,13 @@ func main() {
 	if err != nil {
 		panic("unable to read config, please verify app.<env>.env exists")
 	}
+
 	logger := utils.NewLogger(config.GetLogLevel())
 
-	repo := repository.NewInMemoryHotelRepository()
+	repo, err := repository.RepositoryFactory(config)
+	if err != nil {
+		panic(err.Error())
+	}
 
 	dataLoaderService := service.NewDirectDataLoaderService(config.GetSupplierConfig(), repo, logger)
 	dataLoaderService.LoadData()
