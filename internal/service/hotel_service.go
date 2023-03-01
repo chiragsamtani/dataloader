@@ -28,7 +28,7 @@ func NewHotelService(hotelRepository repository.HotelRepository) *HotelService {
 // an empty list will be returned. An interface is used as the return value
 // for modularity and ease of testing
 func (s *HotelService) SearchHotelsByHotelId(hotelId []string) (interface{}, error) {
-	hotels := s.repository.GetHotelsByHotelId(hotelId)
+	hotels := s.repository.GetHotelsByHotelIds(hotelId)
 	if hotels == nil || len(hotels) == 0 {
 		return []*model.Hotel{}, nil
 	}
