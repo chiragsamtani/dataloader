@@ -10,3 +10,18 @@ services:
       - ./app.local.env
     restart: on-failure
     container_name: api
+    depends_on:
+      db:
+        condition: service_healthy
+  db:
+    image: mariadb:10.5.8
+    env_file:
+      - ./app.local.env
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      retries: 10
+    volumes:
+      - ./mysql-data:/var/lib/mysql
