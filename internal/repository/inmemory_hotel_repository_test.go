@@ -45,8 +45,7 @@ func TestInMemoryHotelRepository_InsertOneElement(t *testing.T) {
 	repo := NewInMemoryHotelRepository()
 	repo.InsertHotel(&hotelData1)
 	assert.Equal(t, *repo.kvStore[testHotelId1], hotelData1)
-	//assert.Equal(t, repo.destinationIdKvStore[hotelData1.DestinationID], []string{testHotelId1})
-	//assert.Nil(t, repo.hotelIdKvStore[testHotelId2])
+	assert.Equal(t, *repo.destinationIdStore[testSingleDestinationId][testHotelId1], hotelData1)
 }
 
 func TestInMemoryHotelRepository_InsertMultipleElementsWithSingleDestinationId(t *testing.T) {
@@ -55,7 +54,8 @@ func TestInMemoryHotelRepository_InsertMultipleElementsWithSingleDestinationId(t
 	repo.InsertHotel(&hotelData3)
 	assert.Equal(t, *repo.kvStore[hotelData2.ID], hotelData2)
 	assert.Equal(t, *repo.kvStore[hotelData3.ID], hotelData3)
-	//assert.Equal(t, repo.destinationIdKvStore[testMultipleDestinationId], []string{testHotelId2, testHotelId3})
+	assert.Equal(t, *repo.destinationIdStore[testMultipleDestinationId][testHotelId2], hotelData1)
+	assert.Equal(t, *repo.destinationIdStore[testMultipleDestinationId][testHotelId3], hotelData1)
 }
 
 func TestInMemoryHotelRepository_GetHotelWithSingleHotelId(t *testing.T) {
