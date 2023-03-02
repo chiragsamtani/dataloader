@@ -13,4 +13,7 @@ jobs:
       - name: Docker Build
         run: docker-compose up -d --build
       - name: Docker Sanity Test
-        run: healthcheck.sh api 8080
+        run: |
+          chmod +x ./healthcheck.sh
+          ./healthcheck.sh api 8080
+        shell: bash
