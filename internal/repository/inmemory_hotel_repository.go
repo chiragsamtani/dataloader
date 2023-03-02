@@ -5,9 +5,12 @@ import (
 	"sync"
 )
 
-// InMemoryHotelRepository uses one hashmaps to store keys that
-// are indexed by hotelId only. Filtering by destinationIds will
-// be using a map<int, map<string, hotel>>
+// InMemoryHotelRepository uses two hashmaps to store keys that
+// are indexed by hotelId only and destinationId. Querying by hotelId
+// only will use the kvStore map exclusively whilst 
+// fitlering by destinationIds will be using a map<int, map<string, hotel>>
+// we will fetch all the hotelIds for a given destinationId (since there
+// can be multiple) and add them to the result set array
 type InMemoryHotelRepository struct {
 	kvStore            map[string]*model.Hotel
 	destinationIdStore map[int]map[string]*model.Hotel

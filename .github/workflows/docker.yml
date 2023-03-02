@@ -17,3 +17,6 @@ jobs:
           chmod +x ./healthcheck.sh
           ./healthcheck.sh api 8080
         shell: bash
+      - name: Docker Cleanup
+        run: docker-compose down
+        
